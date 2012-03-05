@@ -14,7 +14,6 @@ structure_map = {
         'bubble': converters.heirarchy.convert,
         'partition': converters.heirarchy.convert,
         'cluster': converters.heirarchy.convert,
-        'heirarchy': converters.heirarchy.convert,
         }
 
 
