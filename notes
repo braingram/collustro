@@ -1,0 +1,27 @@
+Show me data!
+
+in python:
+  data, stuff, things
+
+take those things, and show them to me in pretty ways
+
+pipeline
+
+mongo <-> python(stuff) <-> flask (to web) <-> javascript <-> d3 <-> d3 layouts
+
+Not all of thes parts are necessary (like mongo)
+
+First usecase
+
+#!/usr/bin/env python
+data_dict = {'a': {'b': 10, 'c': 10}, 'd': {'e' : 70, 'f': 5}, 'g': 5}
+explore(data_dict, tree)
+
+this will take the data_dictionary, push it to javascript,
+convert it to json that fits a heirarchy layout
+show it as a tree layout
+
+To do this:
+1) convert data dictionary to json object (of a certain structure)
+2) serve up a template that requests for the data (ajax)
+3) display template and data

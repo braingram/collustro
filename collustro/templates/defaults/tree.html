@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+        <title>Tree Layout</title>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+        <script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js?2.8.1"></script>
+        <style type="text/css">
+            .node circle {
+              fill: #fff;
+              stroke: steelblue;
+              stroke-width: 1.5px;
+            }
+
+            .node {
+              font: 10px sans-serif;
+            }
+
+            .link {
+              fill: none;
+              stroke: #ccc;
+              stroke-width: 1.5px;
+            }
+        </style>
+        <script type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <script type="text/javascript">
+            var data = null;
+            $.ajaxSetup ({ cache: false });
+            $(document).ready(function () {
+                $.getJSON('data', {}, function (received) {
+                    data = received;
+                    render('#graph', data);
+                });
+            });
+            function render(graphid, data) {
+                var r = 960 / 2;
+                var tree = d3.layout.tree()
+                    .size([360, r - 120])
+                    .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+                var diagonal = d3.svg.diagonal.radial()
+                    .projection(function(d) { return[d.y, d.x / 180 * Math.PI]; });
+
+                var vis = d3.select(graphid).append("svg")
+                    .attr("width", r * 2)
+                    .attr("height", r * 2 - 150)
+                  .append("g")
+                    .attr("transform", "translate(" + r + "," + r + ")");
+
+                var nodes = tree.nodes(data);
+
+                var link = vis.selectAll("path.link")
+                    .data(tree.links(nodes))
+                  .enter().append("path")
+                    .attr("class", "link")
+                    .attr("d", diagonal);
+
+                var node = vis.selectAll("g.node")
+                    .data(nodes)
+                  .enter().append("g")
+                    .attr("class", "node")
+                    .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
+
+                node.append("circle")
+                    .attr("r", 4.5);
+
+                node.append("text")
+                    .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
+                    .attr("dy", ".31em")
+                    .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+                    .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180"; })
+                    .text(function(d) { return d.name; });
+            };
+        </script>
+        <div class='tree' id='graph'>
+        </div>
+    </body>
+</html>
