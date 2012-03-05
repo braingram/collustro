@@ -11,6 +11,7 @@ structure_map = {
         'tree': converters.heirarchy.convert,
         'treemap': converters.heirarchy.convert,
         'pack': converters.heirarchy.convert,
+        'bubble': converters.heirarchy.convert,
         'partition': converters.heirarchy.convert,
         'cluster': converters.heirarchy.convert,
         'heirarchy': converters.heirarchy.convert,

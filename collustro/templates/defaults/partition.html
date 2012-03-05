@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+        <title>Partition Layout</title>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+        <script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js?2.8.1"></script>
+        <style type="text/css">
+            button {
+                font: 14px Helvetica Neue;
+                background-color: #222;
+                background-image: -moz-linear-gradient(top, rgba(255,255,255,.25), rgba(255,255,255,.11));
+                background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, rgba(255,255,255,.25)),color-stop(1, rgba(255,255,255,.11)));
+                background-image: -webkit-linear-gradient(rgba(255,255,255,.25), rgba(255,255,255,.11));
+                color: #fff;
+                text-rendering: optimizeLegibility;
+                text-shadow: 0 -1px 1px #222;
+                padding: 6px 10px 6px 10px;
+                border: 0;
+                border-radius: 0;
+                border-bottom: 1px solid #222;
+                margin: 0;
+                  -moz-box-shadow: 0 1px 3px #999;
+                  -webkit-box-shadow: 0 1px 3px #999;
+            }
+
+            button.first {
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+            }
+
+            button.last {
+                border-top-right-radius: 5px;
+                border-bottom-right-radius: 5px;
+            }
+
+            button.active {
+                background-color: rgb(65,102,133);
+            }
+
+            button:hover {
+                background-color: steelblue;
+            }
+
+            .cell {
+              border: solid 1px white;
+                font: 10px sans-serif;
+                  line-height: 12px;
+                    overflow: hidden;
+                      position: absolute;
+                        text-indent: 2px;
+            }
+        </style>
+        <script type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <script type="text/javascript">
+            var data = null;
+            $.ajaxSetup ({ cache: false });
+            $(document).ready(function () {
+                $.getJSON('data', {}, function (received) {
+                    data = received;
+                    render('#graph', data);
+                });
+            });
+            function render(graphid, data) {
+                var w = 960,
+                    h = 700,
+                    r = Math.min(w, h) / 2,
+                    color = d3.scale.category20c();
+
+                var vis = d3.select(graphid).append("svg")
+                    .attr("width", w)
+                    .attr("height", h)
+                  .append("g")
+                    .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
+
+                var partition = d3.layout.partition()
+                    .sort(null)
+                    .size([2 * Math.PI, r * r])
+                    .value(function(d) { return 1; });
+
+                var arc = d3.svg.arc()
+                    .startAngle(function(d) { return d.x; })
+                    .endAngle(function(d) { return d.x + d.dx; })
+                    .innerRadius(function(d) { return Math.sqrt(d.y); })
+                .outerRadius(function(d) { return Math.sqrt(d.y + d.dy); });
+
+                var path = vis.data([data]).selectAll("path")
+                    .data(partition.nodes)
+                  .enter().append("path")
+                    .attr("display", function(d) { return d.depth ? null : "none"; }) // hide inner ring
+                    .attr("d", arc)
+                    .attr("fill-rule", "evenodd")
+                    .style("stroke", "#fff")
+                    .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
+                    .each(stash);
+
+                d3.select("#size").on("click", function() {
+                  path
+                      .data(partition.value(function(d) { return d.size; }))
+                    .transition()
+                      .duration(1500)
+                      .attrTween("d", arcTween);
+
+                      d3.select("#size").classed("active", true);
+                      d3.select("#count").classed("active", false);
+                    });
+
+                d3.select("#count").on("click", function() {
+                  path
+                      .data(partition.value(function(d) { return 1; }))
+                    .transition()
+                      .duration(1500)
+                      .attrTween("d", arcTween);
+
+                  d3.select("#size").classed("active", false);
+                  d3.select("#count").classed("active", true);
+                });
+
+                // Stash the old values for transition.
+                function stash(d) {
+                  d.x0 = d.x;
+                  d.dx0 = d.dx;
+                }
+
+                // Interpolate the arcs in data space.
+                function arcTween(a) {
+                  var i = d3.interpolate({x: a.x0, dx: a.dx0}, a);
+                  return function(t) {
+                    var b = i(t);
+                    a.x0 = b.x;
+                    a.dx0 = b.dx;
+                    return arc(b);
+                  };
+                }
+            };
+        </script>
+        <button class='first active' id='size'>
+            Size
+        </button><button class='last' id='count'>
+            Count
+        </button><p />
+        <div class='partition' id='graph'>
+        </div>
+    </body>
+</html>

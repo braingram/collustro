@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+        <title>Treemap Layout</title>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+        <script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js?2.8.1"></script>
+        <style type="text/css">
+            button {
+                font: 14px Helvetica Neue;
+                background-color: #222;
+                background-image: -moz-linear-gradient(top, rgba(255,255,255,.25), rgba(255,255,255,.11));
+                background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, rgba(255,255,255,.25)),color-stop(1, rgba(255,255,255,.11)));
+                background-image: -webkit-linear-gradient(rgba(255,255,255,.25), rgba(255,255,255,.11));
+                color: #fff;
+                text-rendering: optimizeLegibility;
+                text-shadow: 0 -1px 1px #222;
+                padding: 6px 10px 6px 10px;
+                border: 0;
+                border-radius: 0;
+                border-bottom: 1px solid #222;
+                margin: 0;
+                  -moz-box-shadow: 0 1px 3px #999;
+                  -webkit-box-shadow: 0 1px 3px #999;
+            }
+
+            button.first {
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+            }
+
+            button.last {
+                border-top-right-radius: 5px;
+                border-bottom-right-radius: 5px;
+            }
+
+            button.active {
+                background-color: rgb(65,102,133);
+            }
+
+            button:hover {
+                background-color: steelblue;
+            }
+
+            .cell {
+              border: solid 1px white;
+                font: 10px sans-serif;
+                  line-height: 12px;
+                    overflow: hidden;
+                      position: absolute;
+                        text-indent: 2px;
+            }
+        </style>
+        <script type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <script type="text/javascript">
+            var data = null;
+            $.ajaxSetup ({ cache: false });
+            $(document).ready(function () {
+                $.getJSON('data', {}, function (received) {
+                    data = received;
+                    render('#graph', data);
+                });
+            });
+            function render(graphid, data) {
+                var w = 960,
+                    h = 500,
+                    color = d3.scale.category20c();
+
+                var treemap = d3.layout.treemap()
+                    .size([w, h])
+                    .sticky(true)
+                    .value(function(d) { return d.size; });
+
+                var div = d3.select(graphid).append("div")
+                    .style("position", "relative")
+                    .style("width", w + "px")
+                    .style("height", h + "px");
+
+                div.data([data]).selectAll("div")
+                    .data(treemap.nodes)
+                  .enter().append("div")
+                    .attr("class", "cell")
+                    .style("background", function(d) { return d.children ? color(d.name) : null; })
+                    .call(cell)
+                    .text(function(d) { return d.children ? null : d.name; });
+
+                d3.select("#size").on("click", function() {
+                    div.selectAll("div")
+                        .data(treemap.value(function(d) { return d.size; }))
+                      .transition()
+                        .duration(1500)
+                        .call(cell);
+
+                    d3.select("#size").classed("active", true);
+                    d3.select("#count").classed("active", false);
+                });
+
+                d3.select("#count").on("click", function() {
+                    div.selectAll("div")
+                        .data(treemap.value(function(d) { return 1; }))
+                      .transition()
+                        .duration(1500)
+                        .call(cell);
+
+                    d3.select("#size").classed("active", false);
+                    d3.select("#count").classed("active", true);
+                });
+            };
+            function cell() {
+                this
+                    .style("left", function(d) { return d.x + "px"; })
+                    .style("top", function(d) { return d.y + "px"; })
+                    .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
+                    .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
+            }
+        </script>
+        <button class='first active' id='size'>
+            Size
+        </button><button class='last' id='count'>
+            Count
+        </button><p />
+        <div class='treemap' id='graph'>
+        </div>
+    </body>
+</html>

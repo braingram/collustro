@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+        <title>Bubble Layout</title>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+        <script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js?2.8.1"></script>
+        <style type="text/css">
+            circle {
+                stroke: #fff;
+                stroke-width: 1.5px;
+            }
+
+            text {
+                font: 10px sans-serif;
+            }
+        </style>
+        <script type="text/javascript">
+        </script>
+    </head>
+    <body>
+        <script type="text/javascript">
+            var data = null;
+            $.ajaxSetup ({ cache: false });
+            $(document).ready(function () {
+                $.getJSON('data', {}, function (received) {
+                    data = received;
+                    render('#graph', data);
+                });
+            });
+            function render(graphid, data) {
+                var r = 960,
+                    format = d3.format(",d"),
+                    fill = d3.scale.category20c();
+
+                var bubble = d3.layout.pack()
+                    .sort(null)
+                    .size([r, r]);
+
+                var vis = d3.select(graphid).append("svg")
+                    .attr("width", r)
+                    .attr("height", r)
+                    .attr("class", "bubble");
+                
+                var node = vis.data([data]).selectAll("g.node")
+                    .data(bubble.nodes(classes(data))
+                    .filter(function(d) { return !d.children; }))
+                  .enter().append("g")
+                    .attr("class", "node")
+                    .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+                node.append("title")
+                    .text(function(d) { return d.className + ": " + format(d.value); });
+                
+                node.append("circle")
+                    .attr("r", function(d) { return d.r; })
+                    .style("fill", function(d) { return fill(d.packageName); });
+
+                node.append("text")
+                    .attr("text-anchor", "middle")
+                    .attr("dy", ".3em")
+                    .text(function(d) { return d.className.substring(0, d.r / 3); });
+            };
+
+            function classes(root) {
+                var classes = [];
+
+                function recurse(name, node) {
+                    if (node.children) node.children.forEach(function(child) { recurse(node.name, child); });
+                    else classes.push({packageName: name, className: node.name, value: node.size});
+                }
+
+                recurse(null, root);
+                return {children: classes};
+            }
+        </script>
+        <div class='bubble' id='graph'>
+        </div>
+    </body>
+</html>
