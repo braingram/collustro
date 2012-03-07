@@ -56,10 +56,11 @@
     </head>
     <body>
         <script type="text/javascript">
+            $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
             var data = null;
             $.ajaxSetup ({ cache: false });
             $(document).ready(function () {
-                $.getJSON('data', {}, function (received) {
+                $.getJSON($SCRIPT_ROOT + '/data', {}, function (received) {
                     data = received;
                     render('#graph', data);
                 });

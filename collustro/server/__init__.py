@@ -23,11 +23,16 @@ import flask
 
 def render_data(template_filename, data):
     template_dir, template_name = os.path.split(template_filename)
+    default_template = os.path.splitext(template_name)[0]
     app = flask.Flask(__name__, template_folder=template_dir)
 
     @app.route('/')
-    def render():
-        return flask.render_template(template_name)
+    def render_default():
+        return flask.render_template(default_template + '.html')
+
+    @app.route('/view/<view_name>')
+    def render(view_name):
+        return flask.render_template(view_name + '.html')
 
     @app.route('/data')
     def get_data():
