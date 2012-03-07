@@ -12,6 +12,8 @@ import json
 
 import utils
 
+valid_types = [dict, list]
+
 
 def raise_convert_error(obj):
     raise utils.ConvertException(obj, 'heirarchy')
