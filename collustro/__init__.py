@@ -3,6 +3,7 @@
 import converters
 import server
 import templates
+import webbrowser
 
 __all__ = ['converters', 'server', 'templates']
 
@@ -36,4 +37,5 @@ def explore(data_dict, *args, **kwargs):
     app = flask.Flask(__name__)
     serv.register_with_flask(app)
 
+    webbrowser.open('http://127.0.0.1:5000')
     app.run(*args, **kwargs)
