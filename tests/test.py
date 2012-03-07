@@ -21,4 +21,5 @@ heirarchy = {'flare': {
 pie = {'a': 20, 'b': 50, 'c': 30}
 
 
-collustro.explore({'pie': pie, 'heirarchy': heirarchy}, debug=True)
+#collustro.explore({'pie': pie, 'heirarchy': heirarchy}, debug=True)
+collustro.explore(locals(), debug=True)
