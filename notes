@@ -25,3 +25,14 @@ To do this:
 1) convert data dictionary to json object (of a certain structure)
 2) serve up a template that requests for the data (ajax)
 3) display template and data
+
+--------------------- main object ----------------------------
+
+register_type_conversion(dict, layout) : convert from python type to layout type
+    result = dict of dicts where k1 = python type, k2 = layout type, v = converter function
+register_template(layout, filename) : show a layout
+data : dictionary (gets fetched by /data/<layout>/<name> (or as certain layout??)
+register_static_file(filename)
+get_available_templates(layout) : get templates for a given layout
+get_available_data(layout) : get data available for a given layout
+get_layouts(data) : get available layouts for a given data object

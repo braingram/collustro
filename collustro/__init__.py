@@ -7,32 +7,33 @@ import templates
 __all__ = ['converters', 'server', 'templates']
 
 
-structure_map = {
-        'tree': converters.heirarchy.convert,
-        'treemap': converters.heirarchy.convert,
-        'pack': converters.heirarchy.convert,
-        'bubble': converters.heirarchy.convert,
-        'partition': converters.heirarchy.convert,
-        'cluster': converters.heirarchy.convert,
-        'pie': converters.pie.convert,
-        }
+import flask
 
 
-def raise_structure_map_error(layout):
-    raise Exception("Unknown layout: %s" % layout)
-
-
-def explore(obj, layout, *args, **kwargs):
+def explore(data_dict, *args, **kwargs):
     """
     layout lookup
     """
-    # load template (from layout)
-    template_filename = templates.find_template(layout)
 
-    # convert object to correct structure (from layout)
-    data = structure_map.get(layout, raise_structure_map_error)(obj)
+    serv = server.Server()
 
-    # serve it all up
-    app = server.render_data(template_filename, data)
+    # set data
+    serv.data = data_dict
+
+    # register conversions
+    serv.register_type_conversion(dict, 'heirarchy', \
+            converters.heirarchy.convert)
+    serv.register_type_conversion(list, 'heirarchy', \
+            converters.heirarchy.convert)
+    serv.register_type_conversion(dict, 'pie', converters.pie.convert)
+    serv.register_type_conversion(list, 'pie', converters.pie.convert)
+
+    # register templates
+    defaults = templates.get_defaults()
+    for n, l, fn in defaults:
+        serv.register_template(n, l, fn)
+
+    app = flask.Flask(__name__)
+    serv.register_with_flask(app)
 
     app.run(*args, **kwargs)

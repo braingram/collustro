@@ -4,7 +4,7 @@ import sys
 
 import collustro
 
-data = {'flare': {
+heirarchy = {'flare': {
     'analytics': {
         'cluster': {
             'AgglomerativeCluster': 3938,
@@ -18,10 +18,7 @@ data = {'flare': {
         },
     }}
 
-print collustro.converters.heirarchy.from_dict(data)
+pie = {'a': 20, 'b': 50, 'c': 30}
 
-layout = 'tree'
-if len(sys.argv) > 1:
-    layout = sys.argv[1]
 
-collustro.explore(data, layout, debug=True)
+collustro.explore({'pie': pie, 'heirarchy': heirarchy}, debug=True)

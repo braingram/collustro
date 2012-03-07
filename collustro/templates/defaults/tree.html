@@ -31,7 +31,7 @@
             var data = null;
             $.ajaxSetup ({ cache: false });
             $(document).ready(function () {
-                $.getJSON($SCRIPT_ROOT + '/data', {}, function (received) {
+                $.getJSON($SCRIPT_ROOT + '/data/heirarchy/' + {{ data_key|tojson|safe }}, {}, function (received) {
                     data = received;
                     render('#graph', data);
                 });
