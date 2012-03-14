@@ -12,6 +12,9 @@ def get_defaults():
 
     filename = os.path.join(template_dir, 'pie') + '.html'
     d.append(('pie', 'pie', filename))
+
+    filename = os.path.join(template_dir, 'bundle') + '.html'
+    d.append(('bundle', 'bundle', filename))
     return d
 
 

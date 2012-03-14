@@ -28,6 +28,7 @@ def explore(data_dict, *args, **kwargs):
             converters.heirarchy.convert)
     serv.register_type_conversion(dict, 'pie', converters.pie.convert)
     serv.register_type_conversion(list, 'pie', converters.pie.convert)
+    serv.register_type_conversion(list, 'bundle', converters.bundle.convert)
 
     # register templates
     defaults = templates.get_defaults()
