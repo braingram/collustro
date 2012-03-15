@@ -15,6 +15,9 @@ def get_defaults():
 
     filename = os.path.join(template_dir, 'bundle') + '.html'
     d.append(('bundle', 'bundle', filename))
+
+    filename = os.path.join(template_dir, 'default') + '.html'
+    d.append(('default', '', filename))
     return d
 
 

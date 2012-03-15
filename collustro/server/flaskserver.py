@@ -56,7 +56,17 @@ class Server(object):
         self.static_files[name] = filename
 
     def get_templates(self, layout):
-        return self.templates[layout]
+        filenames = self.template_map[layout]
+        if len(filenames) == 0:
+            return []
+        templates = []
+        for fn in filenames:
+            if fn in self.templates.values():
+                for (k, v) in self.templates.iteritems():
+                    if v == fn:
+                        templates.append(k)
+                        break
+        return templates
 
     def get_data_keys(self, layout):
         keys = []
@@ -136,6 +146,18 @@ class Server(object):
             # TODO change response type?
             return r
 
+        @app.route('/templates/<key>')
+        def get_templates_for_datum(key):
+            if key not in self.data.keys():
+                flask.abort(404)
+                return None
+
+            layouts = self.get_layouts(self.data[key])
+            templates = []
+            for layout in layouts:
+                templates += self.get_templates(layout)
+            return json.dumps(templates)
+
         @app.route('/data/<layout>')
         def get_data_keys(layout):
             return json.dumps(self.get_data_keys(layout))
@@ -143,5 +165,9 @@ class Server(object):
         @app.route('/data')
         def get_all_data_keys():
             return json.dumps(self.data.keys())
+
+        @app.route('/')
+        def default():
+            return render_template('default', self.data.keys()[0])
 
         return app
