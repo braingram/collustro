@@ -51,7 +51,7 @@
                   .append("svg:g")
                     .attr("transform", "translate(480,480)");
 
-                var nodes = cluster(packages.root(data)),
+                var nodes = cluster.nodes(packages.root(data)),
                     links = packages.imports(nodes);
 
                 vis.selectAll("path.link")
@@ -70,7 +70,7 @@
                     .attr("dy", ".31em")
                     .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
                     .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
-                    .text(function(d) { return d.data.key; });
+                    .text(function(d) { return d.key; });
 
                 d3.select(self.frameElement).style("height", "960px");
             }
