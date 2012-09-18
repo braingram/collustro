@@ -34,5 +34,8 @@ simpsons = [{'name': 'abe', 'size': 80, 'imports': ['herb', 'homer']},
         {'name': 'maggie', 'size': 20, 'imports': []},
         {'name': 'ling', 'size': 20, 'imports': []}]
 
-#collustro.explore({'pie': pie, 'heirarchy': heirarchy}, debug=True)
-collustro.explore(locals(), debug=True)
+p = collustro.explore(locals(), debug=True, async=True)
+print "running asynchronously: %s" % p
+c = raw_input('press enter to stop')
+p.terminate()
+p.join()

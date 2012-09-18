@@ -35,8 +35,6 @@ def explore(data_dict, *args, **kwargs):
     for n, l, fn in defaults:
         serv.register_template(n, l, fn)
 
-    app = flask.Flask(__name__)
-    serv.register_with_flask(app)
-
-    webbrowser.open('http://127.0.0.1:5000')
-    app.run(*args, **kwargs)
+    if 'name' not in kwargs.keys():
+        kwargs['name'] = __name__
+    return serv.run(*args, **kwargs)

@@ -2,7 +2,9 @@
 
 import collections
 import json
+import multiprocessing
 import os
+import webbrowser
 
 import flask
 
@@ -171,3 +173,26 @@ class Server(object):
             return render_template('default', self.data.keys()[0])
 
         return app
+
+    def make_flask_app(self, name):
+        app = flask.Flask(name)
+        self.register_with_flask(app)
+        return app
+
+    def run(self, *args, **kwargs):
+        """
+        if async=True, run using multiprocessing.Process and
+        return the Process object. Use process.terminate and
+        process.join to stop
+        """
+        name = kwargs.get('name', 'collustro')
+        async = kwargs.get('async', False)
+        app = self.make_flask_app(name)
+        if async:
+            server = multiprocessing.Process(target=app.run)
+            server.start()
+            webbrowser.open('http://127.0.0.1:5000')
+            return server
+        else:
+            webbrowser.open('http://127.0.0.1:5000')
+            app.run(*args, **kwargs)
