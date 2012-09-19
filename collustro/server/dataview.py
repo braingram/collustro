@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import json
+import logging
 
 import flask
 
@@ -19,6 +20,7 @@ class DataView(object):
     def add_routes(self, app, prefix='/data'):
         @app.route('%s' % prefix, methods=['GET', 'POST', 'PUT'])
         def keys():
+            logging.debug("DataView.keys()")
             if flask.request.method == 'GET':
                 return json.dumps(self.data.keys())
             else:  # put or post
@@ -28,7 +30,10 @@ class DataView(object):
                 return flask.Response(status=200)
 
         @app.route('%s/<key>' % prefix)
-        def get(key):
+        def datum(key):
+            logging.debug("DataView.datum(%s)" % key)
+            if (key is None) or (key == ''):
+                return keys()
             if key not in self.data.keys():
                 flask.abort(404)
             return json.dumps(self.data[key])

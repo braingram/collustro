@@ -27,7 +27,7 @@ def make_app(name=None, **kwargs):
 
 def run(app, async, **kwargs):
     host = kwargs.get('host', '127.0.0.1')
-    port = kwargs.get('port', '5000')
+    port = kwargs.get('port', 5000)
     addr = 'http://%s:%i' % (host, port)
     if async:
         server = multiprocessing.Process(target=app.run, kwargs=kwargs)

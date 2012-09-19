@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import logging
+
 import dataview
 import flaskserver
 
@@ -12,10 +14,11 @@ collustro_server = None
 def get_global_server(**kwargs):
     global collustro_server
     if collustro_server is None:
+        logging.debug("Making server with kwargs: %s" % kwargs)
         collustro_server = flaskserver.make_app(**kwargs)
-    # register dataview
-    collustro_server.dataview = dataview.DataView()
-    collustro_server.dataview.add_routes(collustro_server)
+        # register dataview
+        collustro_server.dataview = dataview.DataView()
+        collustro_server.dataview.add_routes(collustro_server)
     return collustro_server
 
 
@@ -24,6 +27,7 @@ def register(obj, name=None, server=None):
         server = get_global_server()
     if name is None:
         name = utils.find_name(obj, lvl=2)
+    logging.debug("Registering %s: %s" % (name, obj))
     server.dataview.register(obj, name)
 
 
