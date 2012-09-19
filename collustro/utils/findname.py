@@ -20,7 +20,6 @@ def find(frames, name, lvl):
     argindex = inspect.getargspec(f.f_globals[fn]).args.index(name)
     line = inspect.getframeinfo(frames[0][0]).code_context[0].strip()
     name = get_arg_name(line, argindex)
-    print name, lvl, line, argindex
     return find(frames, name, lvl)
 
 

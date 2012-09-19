@@ -31,6 +31,10 @@ def run(app, async, **kwargs):
     addr = 'http://%s:%i' % (host, port)
     if async:
         server = multiprocessing.Process(target=app.run, kwargs=kwargs)
+        app.running = True
+        app.addr = addr
+        app.host = host
+        app.port = port
         server.start()
         webbrowser.open(addr)
         return server

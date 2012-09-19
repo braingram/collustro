@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+import json
 import logging
+import urllib
 
 import dataview
 import flaskserver
@@ -11,6 +13,12 @@ global collustro_server
 collustro_server = None
 
 
+def send(obj, name, server):
+    addr = server.addr + '/data'
+    logging.debug("Sending %s[%s] to %s" % (name, obj, addr))
+    urllib.urlopen(addr, urllib.urlencode({name: json.dumps(obj)}))
+
+
 def get_global_server(**kwargs):
     global collustro_server
     if collustro_server is None:
@@ -19,6 +27,7 @@ def get_global_server(**kwargs):
         # register dataview
         collustro_server.dataview = dataview.DataView()
         collustro_server.dataview.add_routes(collustro_server)
+        collustro_server.running = False
     return collustro_server
 
 
@@ -27,8 +36,12 @@ def register(obj, name=None, server=None):
         server = get_global_server()
     if name is None:
         name = utils.find_name(obj, lvl=2)
-    logging.debug("Registering %s: %s" % (name, obj))
-    server.dataview.register(obj, name)
+    if not server.running:
+        logging.debug("Registering %s: %s" % (name, obj))
+        server.dataview.register(obj, name)
+    else:
+        logging.debug("Sending %s: %s" % (name, obj))
+        send(obj, name, server)
 
 
 def show(server=None, async=False, **kwargs):

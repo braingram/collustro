@@ -24,9 +24,15 @@ class DataView(object):
             if flask.request.method == 'GET':
                 return json.dumps(self.data.keys())
             else:  # put or post
-                print flask.request.form
-                print flask.request.form.keys()
-                self.data.update(flask.request.form)
+                print dir(flask.request)
+                print "flask.request.args", flask.request.args
+                print "flask.request.data", flask.request.data
+                print "flask.request.form", flask.request.form
+                print "flask.request.form.keys()", flask.request.form.keys()
+                for k, v in flask.request.form.iteritems():
+                    self.data[k] = json.loads(v)
+                #print "as json", json.loads(flask.request.form)
+                #self.data.update(flask.request.form)
                 return flask.Response(status=200)
 
         @app.route('%s/<key>' % prefix)

@@ -2,7 +2,7 @@
 
 from server import get_global_server, register, show
 
-__all__ = ['get_global_server', 'register', 'show', 'explore']
+__all__ = ['get_global_server', 'register', 'send', 'show', 'explore']
 
 
 def explore(data, **kwargs):
