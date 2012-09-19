@@ -17,8 +17,8 @@ class DataView(object):
             name = utils.find_name(obj, lvl=2)
         self.data[name] = obj
 
-    def add_routes(self, app, prefix='/data'):
-        @app.route('%s' % prefix, methods=['GET', 'POST', 'PUT'])
+    def add_routes(self, server, prefix='/data'):
+        @server.route('%s' % prefix, methods=['GET', 'POST', 'PUT'])
         def keys():
             logging.debug("DataView.keys()")
             if flask.request.method == 'GET':
@@ -35,7 +35,7 @@ class DataView(object):
                 #self.data.update(flask.request.form)
                 return flask.Response(status=200)
 
-        @app.route('%s/<key>' % prefix)
+        @server.route('%s/<key>' % prefix)
         def datum(key):
             logging.debug("DataView.datum(%s)" % key)
             if (key is None) or (key == ''):
@@ -44,16 +44,16 @@ class DataView(object):
                 flask.abort(404)
             return json.dumps(self.data[key])
 
-        return app
+        return server
 
 
 def test():
-    app = flask.Flask(__name__)
+    server = flask.Flask(__name__)
     dv = DataView()
     dv.register(1, 'a')
     dv.register(2, 'b')
-    app = dv.add_routes(app)
-    app.run(debug=True)
+    server = dv.add_routes(server)
+    server.run(debug=True)
 
 if __name__ == '__main__':
     test()

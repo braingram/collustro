@@ -23,7 +23,7 @@ def get_global_server(**kwargs):
     global collustro_server
     if collustro_server is None:
         logging.debug("Making server with kwargs: %s" % kwargs)
-        collustro_server = flaskserver.make_app(**kwargs)
+        collustro_server = flaskserver.make_server(**kwargs)
         # register dataview
         collustro_server.dataview = dataview.DataView()
         collustro_server.dataview.add_routes(collustro_server)
@@ -48,3 +48,9 @@ def show(server=None, async=False, **kwargs):
     if server is None:
         server = get_global_server()
     return flaskserver.run(server, async, **kwargs)
+
+
+def stop(server=None):
+    if server is None:
+        server = get_global_server()
+    flaskserver.stop(server)

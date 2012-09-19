@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
-from server import get_global_server, register, show
+from server import get_global_server, register, show, stop
 
-__all__ = ['get_global_server', 'register', 'send', 'show', 'explore']
+__all__ = ['get_global_server', 'register', 'send', 'show', 'stop', 'explore']
+
+
+def data():
+    get_global_server().dataview.data
 
 
 def explore(data, **kwargs):

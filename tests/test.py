@@ -5,6 +5,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 import collustro
 
+async = True
+
 flare = {'flare': {
     'analytics': {
         'cluster': {
@@ -35,11 +37,12 @@ simpsons = [{'name': 'abe', 'size': 80, 'imports': ['herb', 'homer']},
         {'name': 'maggie', 'size': 20, 'imports': []},
         {'name': 'ling', 'size': 20, 'imports': []}]
 
-p = collustro.explore(locals(), debug=True)
-#p = collustro.explore(locals(), debug=True, async=True)
-#server = collustro.get_global_server()
-#print "Data:", server.dataview.data
-#print "running asynchronously: %s" % p
-#c = raw_input('press enter to stop')
-#p.terminate()
-#p.join()
+if not async:
+    p = collustro.explore(locals(), debug=True)
+else:
+    p = collustro.explore(locals(), debug=True, async=True)
+    server = collustro.get_global_server()
+    print "Data:", server.dataview.data
+    print "running asynchronously: %s" % p
+    c = raw_input('press enter to stop')
+    collustro.stop()
