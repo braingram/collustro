@@ -1,38 +1,35 @@
-Show me data!
+rewrite
 
-in python:
-  data, stuff, things
+Usage
+----
 
-take those things, and show them to me in pretty ways
+collustro.register(some_object)  # or register(some_object, view)
+collustro.show()  # or show(async=True)
 
-pipeline
 
-mongo <-> python(stuff) <-> flask (to web) <-> javascript <-> d3 <-> d3 layouts
+How it works
+----
 
-Not all of thes parts are necessary (like mongo)
+Start up a server in a seperate process.
+Wrap each object in a way that I can watch for changes.
+On change, send the difference (or copy of new object) to the server.
+The server uses the views to show different objects.
 
-First usecase
+Server is a flask application running in a separate process using
+multiprocessing and receiving updates via post requests.
 
-#!/usr/bin/env python
-data_dict = {'a': {'b': 10, 'c': 10}, 'd': {'e' : 70, 'f': 5}, 'g': 5}
-explore(data_dict, tree)
+Verbose example
+----
 
-this will take the data_dictionary, push it to javascript,
-convert it to json that fits a heirarchy layout
-show it as a tree layout
+# make object
+l = [1, 2, 3, 4]
 
-To do this:
-1) convert data dictionary to json object (of a certain structure)
-2) serve up a template that requests for the data (ajax)
-3) display template and data
+# make server
+s = server()
 
---------------------- main object ----------------------------
+# wrap object
+l = wrap_list(l)  # returns a wrapped_list which does something on change
 
-register_type_conversion(dict, layout) : convert from python type to layout type
-    result = dict of dicts where k1 = python type, k2 = layout type, v = converter function
-register_template(layout, filename) : show a layout
-data : dictionary (gets fetched by /data/<layout>/<name> (or as certain layout??)
-register_static_file(filename)
-get_available_templates(layout) : get templates for a given layout
-get_available_data(layout) : get data available for a given layout
-get_layouts(data) : get available layouts for a given data object
+l.on_change = lambda self: s.send_to_server(l)
+
+l.append(5)  # should trigger on_change, sending new value to server
