@@ -33,3 +33,27 @@ l = wrap_list(l)  # returns a wrapped_list which does something on change
 l.on_change = lambda self: s.send_to_server(l)
 
 l.append(5)  # should trigger on_change, sending new value to server
+
+So far
+----
+
+Wrapping was a complete PITA, python does not allow '=' overloading so when:
+    a = 1
+    register(a)
+detecting:
+    a = 2
+is super hard as the first 'a' gets deleted and a new one made
+
+No templates or static files (fix this)
+
+Auto name fetching is working but SUPER buggy as it actually inspects
+the source code.
+    a = 1
+    register(a)  # this line will be examined and parsed (very poorly)
+    a, b, c = 1, 2, 3
+    [register(f) for f in (a, b, c)]  # will just never work
+    # this will set f to 1, then 2, finally 3)
+
+data registration, serving (AJAX) & updating (via POST) working
+
+async mostly working (needs some testing for crashing and exiting w/o terminating)
