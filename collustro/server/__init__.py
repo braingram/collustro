@@ -1,33 +1,33 @@
 #!/usr/bin/env python
 
+import dataview
 import flaskserver
 
-# this is the default
-from flaskserver import Server
+from .. import utils
 
-__all__ = ['flaskserver', 'Server']
-
-global serv
-serv = None
+global collustro_server
+collustro_server = None
 
 
-def register(name, obj, view=None, serv=None):
-    if serv is None:
-        serv = get_global_server()
-    serv.register(name, obj, view)
+def get_global_server(**kwargs):
+    global collustro_server
+    if collustro_server is None:
+        collustro_server = flaskserver.make_app(**kwargs)
+    # register dataview
+    collustro_server.dataview = dataview.DataView()
+    collustro_server.dataview.add_routes(collustro_server)
+    return collustro_server
 
 
-def get_global_server():
-    global serv
-    if serv is None:
-        serv = Server()
-    return serv
+def register(obj, name=None, server=None):
+    if server is None:
+        server = get_global_server()
+    if name is None:
+        name = utils.find_name(obj, lvl=2)
+    server.dataview.register(obj, name)
 
 
-def show(*args, **kwargs):
-    if 'serv' in kwargs:
-        serv = kwargs.pop('serv')
-    else:
-        serv = get_global_server()
-    [register(
-    serv.run(**kwargs)
+def show(server=None, async=False, **kwargs):
+    if server is None:
+        server = get_global_server()
+    return flaskserver.run(server, async, **kwargs)

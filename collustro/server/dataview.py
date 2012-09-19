@@ -16,7 +16,7 @@ class DataView(object):
             name = utils.find_name(obj, lvl=2)
         self.data[name] = obj
 
-    def add_rules(self, app, prefix='/data'):
+    def add_routes(self, app, prefix='/data'):
         @app.route('%s' % prefix, methods=['GET', 'POST', 'PUT'])
         def keys():
             if flask.request.method == 'GET':
@@ -41,7 +41,7 @@ def test():
     dv = DataView()
     dv.register(1, 'a')
     dv.register(2, 'b')
-    app = dv.add_rules(app)
+    app = dv.add_routes(app)
     app.run(debug=True)
 
 if __name__ == '__main__':
